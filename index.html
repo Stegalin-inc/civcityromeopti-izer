@@ -1,0 +1,818 @@
+<style>
+    img {
+        --i: 0;
+        --j: 0;
+    }
+
+    .buildimg {
+        width: 64px;
+        height: 64px;
+        background: url(Portraits_Buildings-64.bmp) calc(-64px * var(--i)) calc(-64px * var(--j));
+    }
+
+    .buildportraitimg {
+        /* --i: 0;
+        --j: 0; */
+        width: 50px;
+        height: 78px;
+        background: url(Portraits_Buildings-50X78.png) calc(-50px * var(--i)) calc(-78px * var(--j));
+    }
+</style>
+<h1 id="bldname">NONE</h1>
+<img class="buildimg" style="--i:0;--j:0">
+<img class="buildportraitimg" style="--i:0;--j:0">
+<!-- <img class="buildimg">
+<img class="buildportraitimg"> -->
+<canvas></canvas>
+<script>
+    const buildings = {
+        MEAT: { w: 2, h: 4, p: [2, 7], s: 1 + 4, c: '#f00' },
+        TUNICS: { w: 2, h: 4, p: [2, 11], s: 1 + 4, c: '#9cf' },
+        OLIVEOIL: { w: 2, h: 4, p: [2, 10], s: 1 + 4, c: '#9f7' },
+        BEDS: { w: 5, h: 5, p: [3, 6], s: 1 + 4, c: '#aaa' },
+        RELIGION: { w: 4, h: 8, p: [4, 7], s: 1, c: '#60f' },
+        BREAD: { w: 2, h: 4, p: [2, 8], s: 1 + 4, c: '#da0' },
+        ENTERTAINMENT: { w: 6, h: 6, p: [11, 1], s: 1 + 2 + 4 + 8, c: '#ccc' },
+        // WATER_PIPED: w x: 2h y: 4, p: [], s: 1, c: '#f00' },
+        BATH: { w: 8, h: 8, p: [4, 2], s: 1, c: '#39f' },
+        GRAMMATICUS: { w: 4, h: 6, p: [5, 1], s: 1, c: '#970' },
+        FRUIT: { w: 2, h: 4, p: [9, 9], s: 1 + 4, c: '#fa0' },
+        DOCTOR: { w: 4, h: 2, p: [4, 4], s: 1, c: '#f66' },
+        HOSPITAL: { w: 6, h: 6, p: [4, 5], s: 1, c: '#c44' },
+        SLAVE1: { w: 6, h: 6, p: [4, 9], s: 1, c: '#800' },
+        LIBRARY: { w: 9, h: 9, p: [5, 2], s: 1, c: '#c70' },
+        TOGAS: { w: 2, h: 4, p: [3, 0], s: 1 + 4, c: '#aaf' },
+        WINE: { w: 3, h: 3, p: [2, 9], s: 1, c: '#909' },
+        GLASSWARE: { w: 2, h: 4, p: [3, 10], s: 1 + 4, c: '#0cf' },
+        LUXURY_BATH: { w: 11, h: 11, p: [4, 3], s: 1, c: '#3dc' },
+        RECLINERS: { w: 5, h: 5, p: [3, 7], s: 1, c: '#c55' },
+        HAIRCUT: { w: 2, h: 4, p: [4, 10], s: 1 + 4, c: '#500' },
+        DATES: { w: 2, h: 4, p: [13, 10], s: 1 + 4, c: '#633' },
+        // SLAVE2: w x: 2h y: 4, p: [], s: 1, c: '#f00' },
+        POLITICS: { w: 11, h: 12, p: [4, 1], s: 1 + 4, c: '#f0f' },
+        DRESS: { w: 2, h: 4, p: [3, 1], s: 1 + 4, c: '#f09' },
+        FLOWERS: { w: 2, h: 4, p: [2, 6], s: 1 + 4, c: '#f99' },
+        GEESE: { w: 2, h: 4, p: [0, 2], s: 1 + 4, c: '#894' },
+    }
+    const cnv = document.getElementsByTagName('canvas')[0]
+    cnv.width = 3000
+    cnv.height = 750;
+    const ctx = cnv.getContext('2d')
+    ctx.scale(7, 7)
+
+    const sizes = [
+        {
+            "rot": 0,
+            "x": 5.428571428571431,
+            "y": 7.142857142857144
+        },
+        {
+            "rot": 0,
+            "x": 7.285714285714286,
+            "y": 7.8571428571428585
+        },
+        {
+            "rot": 0,
+            "x": 9.57142857142857,
+            "y": 7.428571428571429
+        },
+        {
+            "rot": 3,
+            "x": 14.857142857142872,
+            "y": 6.714285714285728
+        },
+        {
+            "rot": 1,
+            "x": 5.714285714285687,
+            "y": 2.714285714285709
+        },
+        {
+            "rot": 0,
+            "x": 11.42857142857149,
+            "y": 7.8571428571428585
+        },
+        {
+            "rot": 0,
+            "x": 6.7142857142857215,
+            "y": 12.857142857142867
+        },
+        {
+            "rot": 3,
+            "x": 13.571428571428491,
+            "y": 11.42857142857143
+        },
+        {
+            "rot": 3,
+            "x": 14.714285714285719,
+            "y": 2.428571428571474
+        },
+        {
+            "rot": 0,
+            "x": 23.428571428571356,
+            "y": 12.71428571428572
+        },
+        {
+            "rot": 2,
+            "x": 25.42857142857151,
+            "y": 18.28571428571429
+        },
+        {
+            "rot": 2,
+            "x": 5.71428571428568,
+            "y": 19.571428571428566
+        },
+        {
+            "rot": 2,
+            "x": 11.428571428571447,
+            "y": 19.857142857142826
+        },
+        {
+            "rot": 1,
+            "x": 22.2857142857143,
+            "y": 2.571428571428629
+        },
+        {
+            "rot": 0,
+            "x": 27.857142857142822,
+            "y": 12.285714285714317
+        },
+        {
+            "rot": 2,
+            "x": 22.57142857142858,
+            "y": 17.714285714285694
+        },
+        {
+            "rot": 0,
+            "x": 25.714285714285744,
+            "y": 12.857142857142863
+        },
+        {
+            "rot": 1,
+            "x": 5.428571428571408,
+            "y": 26.000000000000004
+        },
+        {
+            "rot": 1,
+            "x": 26.28571428571435,
+            "y": 21.1428571428572
+        },
+        {
+            "rot": 0,
+            "x": 17.571428571428577,
+            "y": 21.428571428571452
+        },
+        {
+            "rot": 0,
+            "x": 19.714285714285726,
+            "y": 21.571428571428594
+        },
+        {
+            "rot": 1,
+            "x": 17.42857142857106,
+            "y": 26.57142857142851
+        },
+        {
+            "rot": 0,
+            "x": 21.428571428571335,
+            "y": 21.42857142857144
+        },
+        {
+            "rot": 0,
+            "x": 23.28571428571424,
+            "y": 21.428571428571438
+        },
+        {
+            "rot": 2,
+            "x": 29.42857142857151,
+            "y": 12.999999999999957
+        }
+    ]
+
+    const builded = Object.values(buildings).map((bld, i) => {
+        return ({
+            bld,
+            rot: 0,
+            x: (i * 16) % 95,
+            y: 16 * Math.trunc((i * 16) / 95),
+            ...sizes[i],
+        })
+    })
+
+    const gridPath = (() => {
+        const path = new Path2D()
+        ctx.lineWidth = 1 / 7
+        for (let i = 0; i < 70; i++) {
+            path.moveTo(i, 0)
+            path.lineTo(i, 70)
+            path.moveTo(0, i)
+            path.lineTo(70, i)
+        }
+        return path
+    })()
+
+    const drawGrid = () => {
+        ctx.lineWidth = 1 / 7
+        ctx.stroke(gridPath)
+    }
+
+    const getActualPos = (bd, ignoreRoads) => {
+        const b = bd.bld
+        let { x, y } = bd
+        let { w, h } = b
+        x = x | 0
+        y = y | 0
+        if (bd.rot % 2 == 1) {
+            const t = w
+            w = h
+            h = t
+        }
+        if (!ignoreRoads) {
+            if (b.s << bd.rot & 1 << (0)) { y -= 1; h += 1 }
+            if (b.s << bd.rot & 1 << (1)) { w += 1 }
+            if (b.s << bd.rot & 1 << (2)) { h += 1 }
+            if (b.s << bd.rot & 1 << (3)) { x -= 1; w += 1 }
+            if (b.s << bd.rot & 1 << (4)) { y -= 1; h += 1 }
+            if (b.s << bd.rot & 1 << (5)) { w += 1 }
+            if (b.s << bd.rot & 1 << (6)) { h += 1 }
+            if (b.s << bd.rot & 1 << (7)) { x -= 1; w += 1 }
+        }
+        return { x, y, w, h }
+    }
+
+    let selected = null
+
+    const isIntersect = (bld) => {
+        return builded.some(b => {
+            if (b === bld) return false
+            {
+                let { x, y, w, h } = getActualPos(bld, true)
+                const pos = getActualPos(b, true)
+                if (!((x >= pos.x + pos.w) ||
+                    (pos.x >= x + w) ||
+                    (y >= pos.y + pos.h) ||
+                    (pos.y >= y + h)
+                )) return true
+            }
+            {
+                let { x, y, w, h } = getActualPos(bld)
+                const pos = getActualPos(b)
+                if (((x >= pos.x + pos.w) ||
+                    (pos.x >= x + w) ||
+                    (y >= pos.y + pos.h) ||
+                    (pos.y >= y + h)
+                )) return false
+            }
+            {
+                let { x, y, w, h } = getActualPos(bld)
+                const pos = getActualPos(b, true)
+                if (!((x >= pos.x + pos.w) ||
+                    (pos.x >= x + w) ||
+                    (y >= pos.y + pos.h) ||
+                    (pos.y >= y + h)
+                )) return true
+            }
+            {
+                let { x, y, w, h } = getActualPos(bld, true)
+                const pos = getActualPos(b)
+                if (!((x >= pos.x + pos.w) ||
+                    (pos.x >= x + w) ||
+                    (y >= pos.y + pos.h) ||
+                    (pos.y >= y + h)
+                )) return true
+            }
+        })
+    }
+
+    const totalPerimeter = () => {
+        let minx = Infinity
+        let miny = Infinity
+        let maxx = -Infinity
+        let maxy = -Infinity
+        builded.forEach(b => {
+            const p = getActualPos(b, true)
+            if (minx > p.x) minx = p.x
+            if (miny > p.y) miny = p.y
+            if (maxx < p.x + p.w) maxx = p.x + p.w
+            if (maxy < p.y + p.h) maxy = p.y + p.h
+
+        })
+        return ((maxx - minx) + (maxy - miny)) * 2
+    }
+    let bestPer = Infinity
+    const render = () => {
+        /* const per = totalPerimeter()
+        console.log('Per:', per, ' best: ', bestPer);
+        if (per < bestPer) {
+            bestPer = per
+            console.log('%c BEST! ', 'background: #222; color: #bada55');
+        } */
+
+        ctx.clearRect(0, 0, 3000, 700)
+        builded.forEach((bd, i) => {
+            const b = bd.bld
+            let { x, y, w, h } = getActualPos(bd, true)
+            ctx.fillStyle = b.c
+            ctx.fillRect(x, y, w, h)
+            if (bd === selected) {
+                if (isIntersect(bd))
+                    ctx.fillStyle = '#f00a'
+                else
+                    ctx.fillStyle = '#0f95'
+                ctx.fillRect(x, y, w, h)
+            }
+            ctx.fillStyle = '#03f'
+            if (b.s << bd.rot & 1 << (0))
+                ctx.fillRect(x, y - 1, w, 1)
+            if (b.s << bd.rot & 1 << (1))
+                ctx.fillRect(x + w, y, 1, h)
+            if (b.s << bd.rot & 1 << (2))
+                ctx.fillRect(x, y + h, w, 1)
+            if (b.s << bd.rot & 1 << (3))
+                ctx.fillRect(x - 1, y, 1, h)
+            if (b.s << bd.rot & 1 << (4))
+                ctx.fillRect(x, y - 1, w, 1)
+            if (b.s << bd.rot & 1 << (5))
+                ctx.fillRect(x + w, y, 1, h)
+            if (b.s << bd.rot & 1 << (6))
+                ctx.fillRect(x, y + h, w, 1)
+            if (b.s << bd.rot & 1 << (7))
+                ctx.fillRect(x - 1, y, 1, h)
+        })
+        drawGrid()
+    }
+    render()
+    const initRand = () => {
+        builded.map(b => {
+            b.rot = (Math.random() * 4) | 0
+            b.x = (Math.random() * 90) | 0
+            b.y = (Math.random() * 90) | 0
+        })
+        if (builded.some(isIntersect)) initRand()
+    }
+    const tryRandom = () => {
+        const ri = (Math.random() * builded.length) | 0
+        const oldb = { ...builded[ri] }
+        const b = builded[ri]
+        b.rot = (Math.random() * 4) | 0
+        b.x += ((Math.random() * 3) | 0) - 1
+        b.y += ((Math.random() * 3) | 0) - 1
+        /* builded.map(b=>{
+            b.rot = (Math.random()*4)|0
+            b.x += ((Math.random()*3)|0)-1
+            b.y += ((Math.random()*3)|0)-1
+        }) */
+        // render()
+        if (builded.some(isIntersect)) return builded[ri] = oldb
+        const per = totalPerimeter()
+        // console.log('Per:', per, ' best: ', bestPer);
+        if (per < bestPer + 7) {
+            if (per < bestPer) {
+                bestPer = per
+                render()
+                console.log('per:', bestPer);
+                console.log('%c BEST! ', 'background: #222; color: #bada55');
+            }
+            return
+        }
+        builded[ri] = oldb
+    }
+    initRand()
+    setInterval(() => { for (let i = 0; i < 100; ++i)tryRandom() }, 0)
+    cnv.addEventListener('click', e => {
+        if (selected) {
+            selected = null
+            render()
+            return
+        }
+        const x = e.offsetX
+        const y = e.offsetY
+        const bld = (findAtPos(x, y))
+        if (!bld) return
+        selected = bld
+        document.getElementsByTagName('img')[0].style = `--i:${bld.bld.p[0]};--j:${bld.bld.p[1]}`
+        document.getElementsByTagName('img')[1].style = `--i:${bld.bld.p[0]};--j:${bld.bld.p[1]}`
+        bldname.innerText = Object.entries(buildings).find(x => x[1] === bld.bld)[0]
+        render()
+
+    })
+
+    const findAtPos = (x, y) => {
+        const p = ctx.getTransform().inverse().transformPoint({ x, y })
+        const i = builded.map(x => getActualPos(x)).findIndex(b => b.x < p.x && b.x + b.w > p.x && b.y < p.y && b.y + b.h > p.y)
+        return builded[i]
+    }
+    cnv.addEventListener('wheel', e => {
+        if (!selected) return
+        selected.rot = (selected.rot + 1) % 4
+        e.preventDefault()
+
+        render()
+    })
+    cnv.addEventListener('mousemove', e => {
+        const x = e.movementX
+        const y = e.movementY
+        if (!selected) return
+        // console.log(x,y);
+        const ox = selected.x | 0
+        const oy = selected.y | 0
+        selected.x += x / 7
+        selected.y += y / 7
+        if (selected.x | 0 !== ox || selected.y | 0 !== oy)
+            render()
+    })
+</script>
+15
+15+9
+(20+10)
+всегда такой(почти)
+13 0 0 0 0 0 0 0 x 0 y 0 q w e r
+t x1 0 y1 0 a s d f
+q-делает большую чёрную хуйню размера x1 y1
+w-не понял
+e - красная область начинает возвышаться над другими зданиями
+r - с выключенным земля начинает прогибаться впереди
+t-не понял
+
+
+
+13 0 0 0 0 0 0 0 8 0 8 0 1 0 0 0 0
+8 0 8 0 1 0 0 0 0 16 0 16 0 2 0
+<!-- 
+[
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                2,
+                7
+            ],
+            "s": 5,
+            "c": "#f00"
+        },
+        "rot": 2,
+        "x": 61.999999999999964,
+        "y": 10.428571428571429
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                2,
+                11
+            ],
+            "s": 5,
+            "c": "#9cf"
+        },
+        "rot": 2,
+        "x": 59.71428571428568,
+        "y": 10.857142857142842
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                2,
+                10
+            ],
+            "s": 5,
+            "c": "#9f7"
+        },
+        "rot": 0,
+        "x": 57.42857142857147,
+        "y": 10.571428571428555
+    },
+    {
+        "bld": {
+            "w": 5,
+            "h": 5,
+            "p": [
+                3,
+                6
+            ],
+            "s": 5,
+            "c": "#aaa"
+        },
+        "rot": 2,
+        "x": 54.00000000000001,
+        "y": 15.285714285714299
+    },
+    {
+        "bld": {
+            "w": 4,
+            "h": 8,
+            "p": [
+                4,
+                7
+            ],
+            "s": 1,
+            "c": "#60f"
+        },
+        "rot": 0,
+        "x": 59.00000000000011,
+        "y": 15.571428571428584
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                2,
+                8
+            ],
+            "s": 5,
+            "c": "#da0"
+        },
+        "rot": 2,
+        "x": 55.142857142857224,
+        "y": 10.42857142857141
+    },
+    {
+        "bld": {
+            "w": 6,
+            "h": 6,
+            "p": [
+                11,
+                1
+            ],
+            "s": 15,
+            "c": "#ccc"
+        },
+        "rot": 3,
+        "x": 46.28571428571449,
+        "y": 10.285714285714313
+    },
+    {
+        "bld": {
+            "w": 8,
+            "h": 8,
+            "p": [
+                4,
+                2
+            ],
+            "s": 1,
+            "c": "#39f"
+        },
+        "rot": 0,
+        "x": 45.14285714285726,
+        "y": 17.714285714285705
+    },
+    {
+        "bld": {
+            "w": 4,
+            "h": 6,
+            "p": [
+                5,
+                1
+            ],
+            "s": 1,
+            "c": "#970"
+        },
+        "rot": 0,
+        "x": 53.42857142857123,
+        "y": 21.42857142857141
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                9,
+                9
+            ],
+            "s": 5,
+            "c": "#fa0"
+        },
+        "rot": 2,
+        "x": 53.85714285714293,
+        "y": 10.85714285714281
+    },
+    {
+        "bld": {
+            "w": 4,
+            "h": 2,
+            "p": [
+                4,
+                4
+            ],
+            "s": 1,
+            "c": "#f66"
+        },
+        "rot": 1,
+        "x": 57.00000000000007,
+        "y": 23.28571428571426
+    },
+    {
+        "bld": {
+            "w": 6,
+            "h": 6,
+            "p": [
+                4,
+                5
+            ],
+            "s": 1,
+            "c": "#c44"
+        },
+        "rot": 3,
+        "x": 33.28571428571433,
+        "y": 16.285714285714363
+    },
+    {
+        "bld": {
+            "w": 6,
+            "h": 6,
+            "p": [
+                4,
+                9
+            ],
+            "s": 1,
+            "c": "#800"
+        },
+        "rot": 3,
+        "x": 33.85714285714243,
+        "y": 22.285714285714246
+    },
+    {
+        "bld": {
+            "w": 9,
+            "h": 9,
+            "p": [
+                5,
+                2
+            ],
+            "s": 1,
+            "c": "#c70"
+        },
+        "rot": 3,
+        "x": 22.714285714285563,
+        "y": 19.285714285714413
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                3,
+                0
+            ],
+            "s": 5,
+            "c": "#aaf"
+        },
+        "rot": 0,
+        "x": 27.999999999999975,
+        "y": 14.42857142857148
+    },
+    {
+        "bld": {
+            "w": 3,
+            "h": 3,
+            "p": [
+                2,
+                9
+            ],
+            "s": 1,
+            "c": "#909"
+        },
+        "rot": 2,
+        "x": 29.42857142857135,
+        "y": 15.285714285714334
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                3,
+                10
+            ],
+            "s": 5,
+            "c": "#0cf"
+        },
+        "rot": 0,
+        "x": 25.714285714285563,
+        "y": 14.71428571428573
+    },
+    {
+        "bld": {
+            "w": 11,
+            "h": 11,
+            "p": [
+                4,
+                3
+            ],
+            "s": 1,
+            "c": "#3dc"
+        },
+        "rot": 1,
+        "x": 3.857142857142847,
+        "y": 28.000000000000096
+    },
+    {
+        "bld": {
+            "w": 5,
+            "h": 5,
+            "p": [
+                3,
+                7
+            ],
+            "s": 1,
+            "c": "#c55"
+        },
+        "rot": 3,
+        "x": 33.2857142857142,
+        "y": 28.857142857142726
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                4,
+                10
+            ],
+            "s": 5,
+            "c": "#500"
+        },
+        "rot": 3,
+        "x": 15.999999999999922,
+        "y": 32.42857142857137
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                13,
+                10
+            ],
+            "s": 5,
+            "c": "#633"
+        },
+        "rot": 1,
+        "x": 15.428571428571557,
+        "y": 28.285714285714267
+    },
+    {
+        "bld": {
+            "w": 11,
+            "h": 12,
+            "p": [
+                4,
+                1
+            ],
+            "s": 5,
+            "c": "#f0f"
+        },
+        "rot": 1,
+        "x": 20.714285714285637,
+        "y": 28.714285714285705
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                3,
+                1
+            ],
+            "s": 5,
+            "c": "#f09"
+        },
+        "rot": 1,
+        "x": 15.857142857142904,
+        "y": 34.57142857142858
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                2,
+                6
+            ],
+            "s": 5,
+            "c": "#f99"
+        },
+        "rot": 1,
+        "x": 15.142857142857087,
+        "y": 36.42857142857139
+    },
+    {
+        "bld": {
+            "w": 2,
+            "h": 4,
+            "p": [
+                0,
+                2
+            ],
+            "s": 5,
+            "c": "#894"
+        },
+        "rot": 3,
+        "x": 15.857142857142719,
+        "y": 30.85714285714275
+    }
+]
+-->
